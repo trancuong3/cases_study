@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Endless Runner Game</title>
+  <style>
+    canvas {
+      border: 1px solid black;
+      display: block;
+      margin: 0 auto;
+    }
+    #score {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+    }
+  </style>
+</head>
+<body>
+<canvas id="gameCanvas" width="50000" height="660"></canvas>
+<div id="score">Score: </div>
+<script>
+  const canvas = document.getElementById("gameCanvas");
+  const ctx = canvas.getContext("2d");
+
+  let hero = {
+    image: new Image(),
+    top: 250,
+    left: 10,
+    size: 90,
+    speed: 10,
+    acceleration: 0.3 // Mức gia tốc của nhân vật
+  };
+
+  hero.image.src = 'https://png.pngtree.com/png-clipart/20230916/original/pngtree-funny-cartoon-character-running-sticker-clipart-vector-png-image_12255691.png';
+
+  let obstacle = {
+    image: new Image(),
+    top: 10,
+    left: 100,
+    size: 100,
+  };
+
+  obstacle.image.src ="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSPQgTC_C8NChZgrJbr_tp63oEOAYiDWlvY0w&s";
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(hero.image, hero.left, hero.top, hero.size, hero.size);
+    ctx.drawImage(obstacle.image, obstacle.left, obstacle.top, obstacle.size, obstacle.size);
+  }
+
+  function update() {
+    // Tăng tốc độ của nhân vật theo thời gian
+    hero.speed += hero.acceleration;
+
+    // Kiểm tra nếu nhân vật đã vượt qua giữa màn hình
+    if (hero.left + hero.size / 2 > canvas.width / 2) {
+      // Tính toán vị trí mới của màn hình dựa trên vị trí của nhân vật
+      let newCanvasLeft = hero.left - canvas.width / 2 + hero.size / 2;
+      // Kiểm tra xem vị trí mới có nằm trong giới hạn của màn hình không
+      if (newCanvasLeft < 0) {
+        newCanvasLeft = 0;
+      } else if (newCanvasLeft > canvas.width / 2) {
+        newCanvasLeft = canvas.width / 2;
+      }
+
+    }
+    // Ngăn nhân vật di chuyển ra khỏi canvas theo chiều ngang
+    if (hero.left < 0) {
+      hero.left = 0;
+    } else if (hero.left + hero.size > canvas.width / 2) {
+      hero.left = canvas.width / 2 - hero.size;
+    }
+    // Ngăn nhân vật di chuyển ra khỏi canvas theo chiều dọc
+    if (hero.top < 0) {
+      hero.top = 0;
+    } else if (hero.top + hero.size > canvas.height) {
+      hero.top = canvas.height - hero.size;
+    }
+    // Di chuyển nhân vật
+    if (hero.left < canvas.width - hero.size) {
+      hero.left += hero.speed;
+    }
+  }
+
+  function gameLoop() {
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+  }
+
+  gameLoop();
+
+  // Cập nhật vị trí của id "score" khi cuộn trang
+  window.addEventListener('scroll', function() {
+    let scoreDiv = document.getElementById('score');
+
+      scoreDiv.style.top = '10px'; // giữ vị trí top là 10px
+
+  });
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'ArrowUp') {
+      hero.top -= hero.speed; // Di chuyển nhân vật lên
+    } else if (event.key === 'ArrowDown') {
+      hero.top += hero.speed; // Di chuyển nhân vật xuống
+    }
+  });
+
+</script>
+</body>
+</html>
